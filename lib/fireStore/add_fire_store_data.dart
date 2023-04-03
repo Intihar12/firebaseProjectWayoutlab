@@ -1,24 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebasrproject/utils/utils.dart';
 import 'package:firebasrproject/widgets/round_botton_widget.dart';
 import 'package:flutter/material.dart';
 
-class AddPostScreen extends StatefulWidget {
-  const AddPostScreen({Key? key}) : super(key: key);
+class AddFireStoreDataScreen extends StatefulWidget {
+  const AddFireStoreDataScreen({Key? key}) : super(key: key);
 
   @override
-  State<AddPostScreen> createState() => _AddPostScreenState();
+  State<AddFireStoreDataScreen> createState() => _AddFireStoreDataScreenState();
 }
 
-class _AddPostScreenState extends State<AddPostScreen> {
+class _AddFireStoreDataScreenState extends State<AddFireStoreDataScreen> {
   bool loading = false;
   final addPostController = TextEditingController();
-  final firebaseRef = FirebaseDatabase.instance.ref("Post");
+  final userCollection = FirebaseFirestore.instance.collection("Users");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("add post"),
+        title: Text("add fireStore"),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -42,11 +43,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 setState(() {
                   loading = true;
                 });
-                String id = DateTime.now().microsecondsSinceEpoch.toString();
-                firebaseRef.child(id).set({
-                  "id": id,
+                // String id = DateTime.now().microsecondsSinceEpoch.toString();
+                DocumentReference doc = userCollection.doc();
+                Map<String, dynamic> data = {
+                  "id": doc.id,
                   "title": addPostController.text,
-                }).then((value) {
+                };
+                doc.set(data).then((value) {
                   Utils().toastMessage("post Added");
                   setState(() {
                     loading = false;
