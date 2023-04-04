@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebasrproject/ui/auth/forgot_password.dart';
 import 'package:firebasrproject/ui/auth/sign_up_screen.dart';
 import 'package:firebasrproject/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -106,6 +107,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       login();
                     }
                   },
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassword()));
+                      },
+                      child: Text("Forgot password")),
                 ),
                 SizedBox(
                   height: 20,

@@ -18,6 +18,7 @@ class _FireStoreScreenState extends State<FireStoreScreen> {
   final searchFilter = TextEditingController();
   final updateController = TextEditingController();
   final usersCollections = FirebaseFirestore.instance.collection('Users').snapshots();
+  final usersCollectionsRef = FirebaseFirestore.instance.collection('Users');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,14 +60,30 @@ class _FireStoreScreenState extends State<FireStoreScreen> {
                     return Text("some thing went wrong");
                   }
                   return Expanded(
-                    child: ListView.builder(
-                        itemCount: snapShot.data?.docs.length,
-                        itemBuilder: (BuildContext contex, int index) {
-                          return ListTile(
-                            title: Text(snapShot.data!.docs[index]['title'].toString()),
-                          );
-                        }),
-                  );
+                      child: ListView.builder(
+                          itemCount: snapShot.data?.docs.length,
+                          itemBuilder: (BuildContext contex, int index) {
+                            final title = snapShot.data!.docs[index]['title'].toString();
+                            final id = snapShot.data!.docs[index]['id'].toString();
+                            return ListTile(
+                              onTap: () {
+                                showMYdiplog(title, id);
+                              },
+                              title: Text(title),
+                              trailing: PopupMenuButton(
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                      onTap: () {
+                                        usersCollectionsRef.doc(id).delete();
+                                      },
+                                      child: ListTile(
+                                        title: Text("Delete"),
+                                        leading: Icon(Icons.delete),
+                                      ))
+                                ],
+                              ),
+                            );
+                          }));
                 })
           ],
         ),
@@ -96,6 +113,11 @@ class _FireStoreScreenState extends State<FireStoreScreen> {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
+                    usersCollectionsRef.doc(id).update({"title": updateController.text}).then((value) {
+                      Utils().toastMessage("updated");
+                    }).onError((error, stackTrace) {
+                      Utils().toastMessage(error.toString());
+                    });
                   },
                   child: Text("update"))
             ],
